@@ -1,0 +1,13 @@
+res://ui/ui_mgr
+res://assets/materials
+res://components/location_indicator
+res://assets/gridmap
+res://levels
+res://assets/particles
+res://assets/sprites
+res://ui/crosshair
+res://ui/cinematic_black_bars
+res://ui/loading_screen
+res://ui/start_menu
+res://ui/credits
+res://ui/fps_counter
