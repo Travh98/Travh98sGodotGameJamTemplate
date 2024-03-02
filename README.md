@@ -13,3 +13,6 @@ Features:
 Uses Plugins:
 - [Dialogic](https://github.com/dialogic-godot/dialogic)
 - [Phantom Camera](https://github.com/ramokz/phantom-camera)
+
+Credits:
+- Kenney's [Dev textures](https://www.kenney.nl/assets/prototype-textures)
