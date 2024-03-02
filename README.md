@@ -2,10 +2,11 @@
 Travh98's Godot 4 Game Jam Starter Template
 Features:
 - Start Menu
-- UI Elements (fade to black, cinematic bars, fps counter)
+- UI Elements (fade to black, cinematic bars, fps counter, 3d healthbars)
 - Sample particle effects
 - GameMgr autoload for changing levels
 - HealthComponent, Hurtbox, Interaction System
+- Quest System
 - Sample GridMap meshlib for fast prototyping
 
 Uses Plugins:
