@@ -8,7 +8,7 @@ extends Control
 @onready var start_menu_buttons: Control = $MarginContainer
 @onready var credits: Control = $Credits
 
-@export var next_scene_path: String = "res://levels/test_level.tscn"
+@export var next_scene_name: String = "test_level"
 
 
 func _ready():
@@ -18,10 +18,14 @@ func _ready():
 	quit_button.pressed.connect(quit)
 	
 	credits.close_credits.connect(on_credits_closed)
+	
+	# Hide the UI while in start menu
+	UserInterfaceMgr.disable_ui()
 
 
 func load_next_scene():
-	#GameManager.change_level(next_scene_path)
+	GameMgr.change_scene(next_scene_name)
+	UserInterfaceMgr.enable_ui()
 	queue_free()
 
 

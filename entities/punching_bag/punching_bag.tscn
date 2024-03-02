@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://c6jdandmwrh7t"]
+[gd_scene load_steps=10 format=3 uid="uid://c6jdandmwrh7t"]
 
 [ext_resource type="PackedScene" uid="uid://cjbkrjimolek1" path="res://components/health_component/health_component.tscn" id="1_1qquc"]
 [ext_resource type="Script" path="res://entities/punching_bag/punching_bag.gd" id="1_c1kmp"]
+[ext_resource type="PackedScene" uid="uid://b6qydmka43s6f" path="res://ui/healthbar/healthbar_3d.tscn" id="3_22qbx"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_mehtg"]
 
@@ -65,3 +66,6 @@ libraries = {
 }
 
 [node name="HealthComponent" parent="." instance=ExtResource("1_1qquc")]
+
+[node name="Healthbar3D" parent="." instance=ExtResource("3_22qbx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.20226, 0)

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://5p4ihhps6f2q"]
+
+[ext_resource type="PackedScene" uid="uid://cpt28d5sjo8pi" path="res://ui/start_menu/start_menu.tscn" id="2_w1ut0"]
+
+[node name="GameTree" type="Node3D"]
+
+[node name="CurrentLevel" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="StartMenu" parent="." instance=ExtResource("2_w1ut0")]

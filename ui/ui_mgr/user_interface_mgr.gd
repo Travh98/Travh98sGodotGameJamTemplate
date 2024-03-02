@@ -2,16 +2,17 @@ extends Control
 
 ## Global Autoload Manager for User Interface
 
-@onready var overworld_hud: Control = $Hud
-@onready var overworld_pause_menu: Control = $PauseMenu
+@onready var hud: Control = $Hud
+@onready var pause_menu: Control = $PauseMenu
 
+@onready var cinematic_black_bars: CinematicBlackBars = $Hud/CinematicBlackBars
+@onready var fade_to_black_ui: FadeToBlack = $FadeToBlack
 
 var is_paused: bool = false
-var backpack_inventory: Node3D
 
 
 func _ready():
-	pass
+	fade_to_black_ui.fade_from_black()
 
 
 func _input(_event):
@@ -25,32 +26,40 @@ func _input(_event):
 
 
 func pause_game():
-	overworld_pause_menu.visible = true
-	overworld_hud.visible = false
+	pause_menu.visible = true
+	hud.visible = false
 	GameMgr.set_process_actions(false)
 	
 	is_paused = true
 
 
 func unpause_game():
-	overworld_pause_menu.visible = false
-	overworld_hud.visible = true
+	pause_menu.visible = false
+	hud.visible = true
 	GameMgr.set_process_actions(true)
-	
-	if weakref(backpack_inventory).get_ref():
-		backpack_inventory.despawn()
 	
 	is_paused = false
 
 
-func on_sticker_start_menu_done():
-	# Remove the backpack, as its in the way
-	if weakref(backpack_inventory).get_ref():
-		backpack_inventory.queue_free()
-	
-	sticker_start_menu.visible = false
+func enable_ui():
+	visible = true
 
 
-func on_sticker_placing_done():
-	# Return to being paused
-	pause_game()
+func disable_ui():
+	visible = false
+
+
+func show_cinematic_black_bars():
+	cinematic_black_bars.show_black_bars()
+
+
+func hide_cinematic_black_bars():
+	cinematic_black_bars.hide_black_bars()
+
+
+func fade_to_black():
+	fade_to_black_ui.fade_to_black()
+
+
+func fade_from_black():
+	fade_to_black_ui.fade_from_black()

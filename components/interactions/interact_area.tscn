@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cfmmec6cr672d"]
+
+[node name="InteractArea" type="Area3D"]

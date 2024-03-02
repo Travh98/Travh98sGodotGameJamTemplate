@@ -1,8 +1,9 @@
-[gd_scene load_steps=18 format=3 uid="uid://b3pu1tvl7wlnn"]
+[gd_scene load_steps=22 format=3 uid="uid://b3pu1tvl7wlnn"]
 
 [ext_resource type="MeshLibrary" uid="uid://dfj7cvhte3dsn" path="res://assets/gridmap/dev_meshlib.meshlib" id="1_3j1fv"]
 [ext_resource type="PackedScene" uid="uid://sboyc7632ei8" path="res://components/hurt_box/hurt_box.tscn" id="2_tjwtl"]
 [ext_resource type="Material" uid="uid://u81fndq2ntv2" path="res://assets/materials/red_transparent.tres" id="3_ptv2h"]
+[ext_resource type="PackedScene" uid="uid://b1mputhdf02rc" path="res://components/debug_label_3d/debug_label_3d.tscn" id="4_eqwnx"]
 [ext_resource type="PackedScene" uid="uid://c6jdandmwrh7t" path="res://entities/punching_bag/punching_bag.tscn" id="4_u5ghu"]
 [ext_resource type="PackedScene" uid="uid://dygogsxt1dct0" path="res://assets/particles/green_smoke_particles.tscn" id="5_radsc"]
 [ext_resource type="PackedScene" uid="uid://2mf6drtrrffb" path="res://entities/explosion/explosion.tscn" id="6_syg67"]
@@ -10,6 +11,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="8_edb3i"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="8_jtbt0"]
 [ext_resource type="PackedScene" path="res://assets/particles/falling_leaves_particles.tscn" id="10_1d8j4"]
+[ext_resource type="PackedScene" uid="uid://dfl2xtfkbwnyf" path="res://components/anim_assistant/anim_assistant.tscn" id="12_hs5xs"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_n5pnj"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -41,6 +43,35 @@ duration = 1.0
 transition = 0
 ease = 2
 
+[sub_resource type="Animation" id="Animation_gwb7f"]
+resource_name = "level_start"
+length = 5.0
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimAssistant")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": [],
+"method": &"hide_cinematic_bars"
+}, {
+"args": ["example_dialog"],
+"method": &"start_dialog"
+}, {
+"args": [],
+"method": &"finish_cutscene"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ihqq5"]
+_data = {
+"level_start": SubResource("Animation_gwb7f")
+}
+
 [node name="TestLevel" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -71,6 +102,9 @@ shape = SubResource("BoxShape3D_3r1g3")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HurtBox"]
 mesh = SubResource("BoxMesh_33htb")
 
+[node name="DebugLabel3D" parent="HurtBox" instance=ExtResource("4_eqwnx")]
+text = "Hurtbox"
+
 [node name="PunchingBags" type="Node3D" parent="."]
 
 [node name="PunchingBag" parent="PunchingBags" instance=ExtResource("4_u5ghu")]
@@ -81,6 +115,10 @@ transform = Transform3D(1, 1.36832e-05, -3.14988e-06, -1.36832e-05, 1, 1.03665e-
 
 [node name="PunchingBag2" parent="PunchingBags" instance=ExtResource("4_u5ghu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -31)
+
+[node name="DebugLabel3D" parent="PunchingBags/PunchingBag2" instance=ExtResource("4_eqwnx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.31008, 0)
+text = "Punching Bag"
 
 [node name="PunchingBag3" parent="PunchingBags" instance=ExtResource("4_u5ghu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -27)
@@ -114,3 +152,11 @@ script = ExtResource("8_edb3i")
 
 [node name="FallingLeavesParticles" parent="." instance=ExtResource("10_1d8j4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, -20)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ihqq5")
+}
+autoplay = "level_start"
+
+[node name="AnimAssistant" parent="." instance=ExtResource("12_hs5xs")]
