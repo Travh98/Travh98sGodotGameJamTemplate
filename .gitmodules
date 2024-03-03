@@ -1,6 +1,0 @@
-[submodule "addons/dialogic"]
-	path = addons/dialogic
-	url = https://github.com/dialogic-godot/dialogic.git
-[submodule "addons/phantom-camera"]
-	path = addons/phantom-camera
-	url = https://github.com/ramokz/phantom-camera.git
