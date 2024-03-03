@@ -1,0 +1,6 @@
+[submodule "dialogic"]
+	path = addons/dialogic
+	url = https://github.com/dialogic-godot/dialogic.git
+[submodule "addons/dialogic"]
+	path = addons/dialogic
+	url = https://github.com/dialogic-godot/dialogic.git
