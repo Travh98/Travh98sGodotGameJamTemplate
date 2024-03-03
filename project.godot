@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameMgr="*res://components/game_mgr/game_mgr.gd"
 QuestMgr="*res://components/quest_mgmt/quest_mgr.gd"
 UserInterfaceMgr="*res://ui/ui_mgr/user_interface_mgr.tscn"
+GGS="*res://addons/ggs/classes/global/ggs.tscn"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 
 [dialogic]
@@ -32,9 +33,13 @@ directories/dtl_directory={
 "example_dialog": "res://dialog/timelines/example_dialog.dtl"
 }
 
+[editor]
+
+export/convert_text_resources_to_binary=false
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/ggs/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [input]
 
