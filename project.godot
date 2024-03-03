@@ -17,10 +17,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 GameMgr="*res://components/game_mgr/game_mgr.gd"
 QuestMgr="*res://components/quest_mgmt/quest_mgr.gd"
 UserInterfaceMgr="*res://ui/ui_mgr/user_interface_mgr.tscn"
+Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 
 [dialogic]
 
@@ -34,7 +34,7 @@ directories/dtl_directory={
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogic/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [input]
 
