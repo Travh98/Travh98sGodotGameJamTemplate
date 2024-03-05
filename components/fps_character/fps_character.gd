@@ -11,6 +11,7 @@ extends CharacterBody3D
 @onready var standing_col: CollisionShape3D = $StandingCol
 @onready var crouching_col: CollisionShape3D = $CrouchingCol
 @onready var standing_room_cast = $StandingRoomCast
+@onready var fps_character_state_info: FpsCharacterStateInfo = $FpsCharacterStateInfo
 
 # Speed variables
 var current_speed: = 5.0
@@ -34,6 +35,7 @@ var is_sprinting: bool = false
 var is_crouching: bool = false
 var is_free_looking: bool = false
 var is_sliding: bool = false
+var is_slide_jumping: bool = false
 
 # Camera Controls
 var free_look_tilt_amount: float = 5.0
@@ -67,6 +69,7 @@ func _ready():
 
 
 func _input(event):
+	# Move the head/neck with the motion of the Mouse
 	if event is InputEventMouseMotion:
 		if is_free_looking:
 			neck.rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
@@ -81,65 +84,144 @@ func _physics_process(delta):
 	var input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
 	if Input.is_action_pressed("crouch") or is_sliding:
-		current_speed = CrouchingSpeed
-		head.position.y = lerp(head.position.y, crouching_depth, delta * lerp_speed)
-		standing_col.disabled = true
-		crouching_col.disabled = false
-		
-		# If we were currently sprinting and moving
-		if is_sprinting and input_dir != Vector2.ZERO:
-			# Sliding begin logic
-			is_sliding = true
-			slide_timer = slide_timer_max
-			slide_vector = input_dir
-			is_free_looking = true
-			print("Slide begin")
-		
-		is_walking = false
-		is_sprinting = false
-		is_crouching = true
+		handle_crouch(input_dir, delta)
 	
 	# Make sure we can uncrouch
 	elif !standing_room_cast.is_colliding():
-		head.position.y = lerp(head.position.y, 0.0, delta * lerp_speed)
-		standing_col.disabled = false
-		crouching_col.disabled = true
+		handle_stand_up(delta)
 		
 		if Input.is_action_pressed("sprint"):
-			current_speed = SprintingSpeed
-			
-			is_walking = false
-			is_sprinting = true
-			is_crouching = false
+			handle_sprinting()
 		else:
-			current_speed = WalkingSpeed
-			is_walking = true
-			is_sprinting = false
-			is_crouching = false
+			handle_walking()
 	
 	# Handle free look
 	if Input.is_action_pressed("free_look") or is_sliding:
-		is_free_looking = true
-		
-		if is_sliding:
-			head_pcam.rotation.z = lerp(head_pcam.rotation.z, -deg_to_rad(7.0), delta * lerp_speed)
-		else:
-			head_pcam.rotation.z = deg_to_rad(-neck.rotation.y * free_look_tilt_amount)
+		handle_free_look(delta)
 	else:
-		is_free_looking = false
-		neck.rotation.y = lerp(neck.rotation.y, 0.0, delta * lerp_speed)
-		head_pcam.rotation.z = lerp(head_pcam.rotation.z, 0.0, delta * lerp_speed)
+		reset_free_look(delta)
 	
 	# Handle Sliding
 	if is_sliding:
-		slide_timer -= delta
-		if slide_timer <= 0:
-			# Slide end 
-			is_sliding = false
-			is_free_looking = false
-			print("Slide end")
+		handle_slide_state(delta)
 	
 	# Handle Headbob
+	handle_headbob(input_dir, delta)
+	
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+	
+	if is_on_floor():
+		is_slide_jumping = false
+
+	# Handle jump.
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JumpVelocity
+		# Cancel the slide if jumping
+		if is_sliding:
+			is_slide_jumping = true
+			slide_vector = input_dir
+			is_sliding = false
+			print("Slide jumping")
+	
+	# Acceleration
+	direction = lerp(direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerp_speed)
+	
+	if is_sliding or is_slide_jumping:
+		direction = (transform.basis * Vector3(slide_vector.x, 0, slide_vector.y)).normalized()
+	
+	if direction:
+		velocity.x = direction.x * current_speed
+		velocity.z = direction.z * current_speed
+		
+		if is_slide_jumping:
+			velocity.x = direction.x * slide_speed
+			velocity.z = direction.z * slide_speed
+		elif is_sliding:
+			velocity.x = direction.x * (slide_timer + 0.1) * slide_speed
+			velocity.z = direction.z * (slide_timer + 0.1) * slide_speed
+	else:
+		velocity.x = move_toward(velocity.x, 0, current_speed)
+		velocity.z = move_toward(velocity.z, 0, current_speed)
+	
+	move_and_slide()
+	
+	update_state_info()
+	
+	
+
+
+func handle_crouch(input_dir: Vector2, delta: float):
+	current_speed = CrouchingSpeed
+	head.position.y = lerp(head.position.y, crouching_depth, delta * lerp_speed)
+	standing_col.disabled = true
+	crouching_col.disabled = false
+	
+	# If we were currently sprinting and moving
+	if is_sprinting and input_dir != Vector2.ZERO:
+		start_slide(input_dir)
+	
+	is_walking = false
+	is_sprinting = false
+	is_crouching = true
+
+
+func start_slide(input_dir: Vector2):
+	# Sliding begin logic
+	is_sliding = true
+	slide_timer = slide_timer_max
+	slide_vector = input_dir
+	is_free_looking = true
+	print("Slide begin")
+
+
+func handle_stand_up(delta: float):
+	head.position.y = lerp(head.position.y, 0.0, delta * lerp_speed)
+	standing_col.disabled = false
+	crouching_col.disabled = true
+
+
+func handle_sprinting():
+	current_speed = SprintingSpeed
+	
+	is_walking = false
+	is_sprinting = true
+	is_crouching = false
+
+
+func handle_walking():
+	current_speed = WalkingSpeed
+	is_walking = true
+	is_sprinting = false
+	is_crouching = false
+
+
+func handle_free_look(delta: float):
+	is_free_looking = true
+		
+	if is_sliding:
+		head_pcam.rotation.z = lerp(head_pcam.rotation.z, -deg_to_rad(7.0), delta * lerp_speed)
+	else:
+		head_pcam.rotation.z = deg_to_rad(-neck.rotation.y * free_look_tilt_amount)
+
+
+func reset_free_look(delta: float):
+	is_free_looking = false
+	neck.rotation.y = lerp(neck.rotation.y, 0.0, delta * lerp_speed)
+	head_pcam.rotation.z = lerp(head_pcam.rotation.z, 0.0, delta * lerp_speed)
+
+
+func handle_slide_state(delta: float):
+	slide_timer -= delta
+	if slide_timer <= 0:
+		# Slide end 
+		is_sliding = false
+		is_free_looking = false
+		print("Slide end")
+
+
+func handle_headbob(input_dir: Vector2, delta: float):
 	if is_sprinting:
 		head_bobbing_intensity = HeadBobSprintIntensity
 		head_bobbing_index += HeadBobSprintSpeed * delta
@@ -159,30 +241,25 @@ func _physics_process(delta):
 	else:
 		eyes.position.y = lerp(eyes.position.y, 0.0, delta * lerp_speed)
 		eyes.position.x = lerp(eyes.position.x, 0.0, delta * lerp_speed)
+
+
+func update_state_info():
+	fps_character_state_info.set_speed(velocity.length())
 	
-	# Add the gravity.
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-
-	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JumpVelocity
-		is_sliding = false
-
-	if is_sliding:
-		direction = (transform.basis * Vector3(slide_vector.x, 0, slide_vector.y)).normalized()
-
-	# Acceleration
-	direction = lerp(direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerp_speed)
-	if direction:
-		velocity.x = direction.x * current_speed
-		velocity.z = direction.z * current_speed
-		
-		if is_sliding:
-			velocity.x = direction.x * (slide_timer + 0.1) * slide_speed
-			velocity.z = direction.z * (slide_timer + 0.1) * slide_speed
+	var state_str: String = "<"
+	if is_crouching:
+		state_str += "crouch + "
 	else:
-		velocity.x = move_toward(velocity.x, 0, current_speed)
-		velocity.z = move_toward(velocity.z, 0, current_speed)
-
-	move_and_slide()
+		if is_sprinting:
+			state_str += "sprint + "
+		elif is_walking:
+			state_str += "walk + "
+	
+	if is_slide_jumping:
+		state_str += "slidejump + "
+	
+	if is_sliding:
+		state_str += "slide + "
+	
+	state_str += ">"
+	fps_character_state_info.set_state(state_str)

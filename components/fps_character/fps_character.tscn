@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cheoq2dxkgi7u"]
+[gd_scene load_steps=6 format=3 uid="uid://cheoq2dxkgi7u"]
 
 [ext_resource type="Script" path="res://components/fps_character/fps_character.gd" id="1_1asp3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="1_r0lxu"]
+[ext_resource type="PackedScene" uid="uid://c0u1u1w315lqq" path="res://ui/fps_char_state_info/fps_character_state_info.tscn" id="3_xcuqc"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ftsmo"]
 radius = 0.25
@@ -43,3 +44,5 @@ camera_3D_resource = null
 
 [node name="StandingRoomCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 1.8, 0)
+
+[node name="FpsCharacterStateInfo" parent="." instance=ExtResource("3_xcuqc")]
