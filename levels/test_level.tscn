@@ -104,7 +104,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.12854, -0.286325, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.874136, -0.438458, 0)
 
 [node name="DevWoodPlank4" parent="NavigationRegion3D/WoodPlanks" instance=ExtResource("3_oaqvh")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.34694, -0.682094, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.34694, -0.99795, 0)
 
 [node name="SidePcam" type="Node3D" parent="."]
 transform = Transform3D(0.0410409, -0.527962, 0.848276, 0, 0.848991, 0.528407, -0.999157, -0.0216863, 0.0348434, 6.86949, 8.96008, -19.7544)
