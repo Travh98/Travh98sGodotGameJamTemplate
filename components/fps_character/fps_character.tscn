@@ -28,7 +28,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
 [node name="Head" type="Node3D" parent="Neck"]
 
-[node name="FpsCharPcam" type="Node3D" parent="Neck/Head"]
+[node name="Eyes" type="Node3D" parent="Neck/Head"]
+
+[node name="FpsCharPcam" type="Node3D" parent="Neck/Head/Eyes"]
 script = ExtResource("1_r0lxu")
 priority_override = false
 priority = 0
