@@ -45,4 +45,7 @@ camera_3D_resource = null
 [node name="StandingRoomCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 1.8, 0)
 
+[node name="ContinueSlideCast" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137367, -0.448626)
+
 [node name="FpsCharacterStateInfo" parent="." instance=ExtResource("3_xcuqc")]

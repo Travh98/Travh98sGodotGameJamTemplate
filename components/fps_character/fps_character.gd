@@ -10,8 +10,9 @@ extends CharacterBody3D
 @onready var neck: Node3D = $Neck
 @onready var standing_col: CollisionShape3D = $StandingCol
 @onready var crouching_col: CollisionShape3D = $CrouchingCol
-@onready var standing_room_cast = $StandingRoomCast
+@onready var standing_room_cast: RayCast3D = $StandingRoomCast
 @onready var fps_character_state_info: FpsCharacterStateInfo = $FpsCharacterStateInfo
+@onready var continue_slide_cast: RayCast3D = $ContinueSlideCast
 
 # Speed variables
 var current_speed: = 5.0
@@ -32,6 +33,7 @@ var direction: Vector3 = Vector3.ZERO
 # Player State
 var is_walking: bool = false
 var is_sprinting: bool = false
+var sprint_toggled: bool = false
 var is_crouching: bool = false
 var is_free_looking: bool = false
 var is_sliding: bool = false
@@ -45,6 +47,9 @@ var slide_timer = 0.0
 var slide_timer_max = 1.0
 var slide_vector: Vector2 = Vector2.ZERO
 var slide_speed: float = 10.0
+var slide_pending: bool = false
+var slide_time_debt: float = 0.0
+const MaxSlideTime = 1000.0
 
 # Head Bob Variables
 const HeadBobSprintSpeed: float = 22.0
@@ -90,7 +95,11 @@ func _physics_process(delta):
 	elif !standing_room_cast.is_colliding():
 		handle_stand_up(delta)
 		
-		if Input.is_action_pressed("sprint"):
+		if Input.is_action_just_pressed("sprint"):
+			sprint_toggled = true
+		if input_dir == Vector2.ZERO or velocity == Vector3.ZERO:
+			sprint_toggled = false
+		if sprint_toggled:
 			handle_sprinting()
 		else:
 			handle_walking()
@@ -139,8 +148,8 @@ func _physics_process(delta):
 			velocity.x = direction.x * slide_speed
 			velocity.z = direction.z * slide_speed
 		elif is_sliding:
-			velocity.x = direction.x * (slide_timer + 0.1) * slide_speed
-			velocity.z = direction.z * (slide_timer + 0.1) * slide_speed
+			velocity.x = direction.x * (clampf(slide_timer, 0.0, MaxSlideTime) + clampf(slide_time_debt, 0.0, MaxSlideTime) + 0.1) * slide_speed
+			velocity.z = direction.z * (clampf(slide_timer, 0.0, MaxSlideTime) + clampf(slide_time_debt, 0.0, MaxSlideTime) + 0.1) * slide_speed
 	else:
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 		velocity.z = move_toward(velocity.z, 0, current_speed)
@@ -148,18 +157,23 @@ func _physics_process(delta):
 	move_and_slide()
 	
 	update_state_info()
-	
-	
 
 
 func handle_crouch(input_dir: Vector2, delta: float):
-	current_speed = CrouchingSpeed
+	if is_on_floor():
+		current_speed = CrouchingSpeed
+	else:
+		# Multiply the gravity
+		velocity.y -= gravity * 2 * delta
 	head.position.y = lerp(head.position.y, crouching_depth, delta * lerp_speed)
 	standing_col.disabled = true
 	crouching_col.disabled = false
 	
 	# If we were currently sprinting and moving
-	if is_sprinting and input_dir != Vector2.ZERO:
+	if (is_sprinting and input_dir != Vector2.ZERO) or (!is_on_floor() and input_dir != Vector2.ZERO):
+		slide_pending = true
+	
+	if slide_pending:
 		start_slide(input_dir)
 	
 	is_walking = false
@@ -169,11 +183,13 @@ func handle_crouch(input_dir: Vector2, delta: float):
 
 func start_slide(input_dir: Vector2):
 	# Sliding begin logic
-	is_sliding = true
-	slide_timer = slide_timer_max
-	slide_vector = input_dir
-	is_free_looking = true
-	print("Slide begin")
+	if is_on_floor():
+		slide_pending = false
+		is_sliding = true
+		slide_timer = slide_timer_max
+		slide_vector = input_dir
+		is_free_looking = true
+		print("Slide begin")
 
 
 func handle_stand_up(delta: float):
@@ -214,11 +230,25 @@ func reset_free_look(delta: float):
 
 func handle_slide_state(delta: float):
 	slide_timer -= delta
+	
+	if continue_slide_cast.is_colliding():
+		if continue_slide_cast.get_collision_point().y < global_position.y - 0.05:
+			print("Continue slide collision point is below player: ", str(global_position.y - continue_slide_cast.get_collision_point().y).pad_decimals(2), " meters")
+			slide_timer = slide_timer_max
+			slide_time_debt += delta
+			print("Slide timer: ", slide_timer, " seconds, slide time debt: ", slide_time_debt)
+			
+	
 	if slide_timer <= 0:
-		# Slide end 
-		is_sliding = false
-		is_free_looking = false
-		print("Slide end")
+		if clampf(slide_time_debt, 0.0, MaxSlideTime) > 0:
+			slide_time_debt -= delta
+			print("burning slide time debt: ", slide_time_debt)
+		else:
+			# Slide end 
+			is_sliding = false
+			is_free_looking = false
+			slide_time_debt = 0.0
+			print("Slide end")
 
 
 func handle_headbob(input_dir: Vector2, delta: float):

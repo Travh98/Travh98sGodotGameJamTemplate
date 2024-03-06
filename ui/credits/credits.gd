@@ -34,7 +34,7 @@ func addons_credits():
 			if dir.current_is_dir():
 				if dir.file_exists("res://addons/" + addon_filename + "/plugin.cfg"):
 					var plugin_file = FileAccess.open("res://addons/" + addon_filename + "/plugin.cfg", FileAccess.READ)
-					var addon_info_str: String
+					var addon_info_str: String = ""
 					
 					if plugin_file:
 						while not plugin_file.eof_reached():
