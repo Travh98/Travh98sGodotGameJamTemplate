@@ -189,7 +189,7 @@ func start_slide(input_dir: Vector2):
 		slide_timer = slide_timer_max
 		slide_vector = input_dir
 		is_free_looking = true
-		print("Slide begin")
+		#print("Slide begin")
 
 
 func handle_stand_up(delta: float):
@@ -233,7 +233,7 @@ func handle_slide_state(delta: float):
 	
 	if continue_slide_cast.is_colliding():
 		if continue_slide_cast.get_collision_point().y < global_position.y - 0.05:
-			print("Continue slide collision point is below player: ", str(global_position.y - continue_slide_cast.get_collision_point().y).pad_decimals(2), " meters")
+			#print("Continue slide collision point is below player: ", str(global_position.y - continue_slide_cast.get_collision_point().y).pad_decimals(2), " meters")
 			slide_timer = slide_timer_max
 			slide_time_debt += delta
 			print("Slide timer: ", slide_timer, " seconds, slide time debt: ", slide_time_debt)
@@ -242,13 +242,17 @@ func handle_slide_state(delta: float):
 	if slide_timer <= 0:
 		if clampf(slide_time_debt, 0.0, MaxSlideTime) > 0:
 			slide_time_debt -= delta
-			print("burning slide time debt: ", slide_time_debt)
+			#print("burning slide time debt: ", slide_time_debt)
 		else:
 			# Slide end 
 			is_sliding = false
 			is_free_looking = false
 			slide_time_debt = 0.0
-			print("Slide end")
+			
+			is_free_looking = false
+			global_rotation.y = neck.global_rotation.y
+			neck.rotation.y = 0.0
+			#print("Slide end")
 
 
 func handle_headbob(input_dir: Vector2, delta: float):
