@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://cheoq2dxkgi7u"]
+[gd_scene load_steps=12 format=3 uid="uid://cheoq2dxkgi7u"]
 
 [ext_resource type="Script" path="res://components/fps_character/fps_character.gd" id="1_1asp3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="1_r0lxu"]
+[ext_resource type="PackedScene" uid="uid://clcdrmfwr6u7k" path="res://props/dev_rifle.tscn" id="3_hv7dg"]
 [ext_resource type="PackedScene" uid="uid://c0u1u1w315lqq" path="res://ui/fps_char_state_info/fps_character_state_info.tscn" id="3_xcuqc"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ftsmo"]
@@ -161,10 +162,17 @@ tween_on_load = true
 inactive_update_mode = 0
 camera_3D_resource = null
 
+[node name="EyeRaycast" type="RayCast3D" parent="Neck/Head/Eyes/FpsCharPcam"]
+target_position = Vector3(0, 0, -1000)
+debug_shape_custom_color = Color(0, 0.945098, 0, 0.117647)
+
 [node name="EyesAnimPlayer" type="AnimationPlayer" parent="Neck/Head/Eyes"]
 libraries = {
 "": SubResource("AnimationLibrary_bjicv")
 }
+
+[node name="DevRifle" parent="Neck/Head/Eyes" instance=ExtResource("3_hv7dg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200213, -0.363085, -0.503023)
 
 [node name="StandingRoomCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 1.8, 0)
@@ -175,3 +183,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137367, -0.448626)
 [node name="FpsCharacterStateInfo" parent="." instance=ExtResource("3_xcuqc")]
 
 [node name="CoyoteTimer" type="Timer" parent="."]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]

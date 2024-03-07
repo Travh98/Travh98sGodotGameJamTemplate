@@ -15,6 +15,7 @@ class_name FpsCharacter
 @onready var fps_character_state_info: FpsCharacterStateInfo = $FpsCharacterStateInfo
 @onready var continue_slide_cast: RayCast3D = $ContinueSlideCast
 @onready var eyes_anim_player = $Neck/Head/Eyes/EyesAnimPlayer
+@onready var eye_raycast = $Neck/Head/Eyes/FpsCharPcam/EyeRaycast
 
 # Speed variables
 var current_speed: = 5.0
@@ -104,9 +105,14 @@ func _input(event):
 func _physics_process(delta):
 	var input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
+	if Input.is_action_just_pressed("primary"):
+		$Neck/Head/Eyes/DevRifle.shoot(eye_raycast)
+	if Input.is_action_just_pressed("reload"):
+		$Neck/Head/Eyes/DevRifle.reload()
+	
+	# Movement
 	if Input.is_action_pressed("crouch") or is_sliding:
 		handle_crouch(input_dir, delta)
-	
 	# Make sure we can uncrouch
 	elif !standing_room_cast.is_colliding():
 		handle_stand_up(delta)
@@ -147,7 +153,7 @@ func _physics_process(delta):
 	if !is_on_floor() and last_frame_on_floor and !is_jumping:
 		in_coyote_time = true
 		coyote_timer.start()
-		print("Starting coyote time for ", coyote_timer.wait_time, " secs")
+		#print("Starting coyote time for ", coyote_timer.wait_time, " secs")
 	last_frame_on_floor = is_on_floor()
 	
 	# Handle jump.
@@ -164,7 +170,7 @@ func _physics_process(delta):
 				# Slide jumping needs more of a height boost to be viable for crossing gaps
 				velocity.y = JumpVelocity * 1.5
 				slide_jump_cooldown = SlideJumpCooldownMax
-				print("Slide jumping")
+				#print("Slide jumping")
 			else:
 				print("Cooling down slide jump")
 				# Cancel the jump
@@ -225,11 +231,11 @@ func handle_crouch(input_dir: Vector2, delta: float):
 	
 	# If we were currently sprinting and moving
 	if (is_sprinting and input_dir != Vector2.ZERO):
-		print("Crouching and also sprinting")
+		#print("Crouching and also sprinting")
 		slide_pending = true
 	if (!is_on_floor() and input_dir != Vector2.ZERO):
 		if slide_pending == false:
-			print("Wants to land into slide")
+			#print("Wants to land into slide")
 			slide_pending = true
 	
 	if slide_pending and !is_sliding and is_on_floor():
@@ -248,7 +254,7 @@ func start_slide(input_dir: Vector2):
 	initial_slide_vector = input_dir
 	slide_vector = initial_slide_vector
 	is_free_looking = true
-	print("Slide begin")
+	#print("Slide begin")
 
 
 func handle_slide_state(input_dir: Vector2, delta: float):
@@ -279,7 +285,7 @@ func handle_slide_state(input_dir: Vector2, delta: float):
 	
 	# If we are moving slow we have probably hit a wall, cancel the slide
 	if velocity.length() < CrouchingSpeed:
-		print("Not moving fast enough, cancelling slide")
+		#print("Not moving fast enough, cancelling slide")
 		slide_end()
 
 
@@ -290,7 +296,7 @@ func slide_end():
 	slide_time_debt = 0.0
 	global_rotation.y = neck.global_rotation.y
 	neck.rotation.y = 0.0
-	print("Slide end")
+	#print("Slide end")
 
 
 func handle_stand_up(delta: float):
@@ -353,7 +359,7 @@ func handle_headbob(input_dir: Vector2, delta: float):
 
 func on_coyote_timeout():
 	in_coyote_time = false
-	print("Coyote time timed out")
+	#print("Coyote time timed out")
 
 
 func update_state_info():
