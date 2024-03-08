@@ -186,10 +186,11 @@ func _physics_process(delta):
 	# Detect when we land
 	if is_on_floor():
 		is_jumping = false
-		if last_frame_velocity.y < -10.0:
-			eyes_anim_player.play("heavy_landing")
-		elif last_frame_velocity.y < -1.0: 
-			eyes_anim_player.play("landing")
+		if !is_sliding:
+			if last_frame_velocity.y < -10.0:
+				eyes_anim_player.play("heavy_landing")
+			elif last_frame_velocity.y < -5.0: 
+				eyes_anim_player.play("landing")
 	
 	# Acceleration
 	if is_on_floor():
