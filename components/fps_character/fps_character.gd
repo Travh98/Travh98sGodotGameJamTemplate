@@ -16,6 +16,7 @@ class_name FpsCharacter
 @onready var continue_slide_cast: RayCast3D = $ContinueSlideCast
 @onready var eyes_anim_player = $Neck/Head/Eyes/EyesAnimPlayer
 @onready var eye_raycast = $Neck/Head/Eyes/FpsCharPcam/EyeRaycast
+@onready var ads_anim_player = $Neck/Head/Eyes/AdsAnimPlayer
 
 # Speed variables
 var current_speed: = 5.0
@@ -100,6 +101,11 @@ func _input(event):
 			rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
 		head.rotate_x(deg_to_rad(-event.relative.y * mouse_sens))
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+	
+	if Input.is_action_just_pressed("secondary"):
+		ads_anim_player.play("aim_down_sights")
+	if Input.is_action_just_released("secondary"):
+		ads_anim_player.play("unaim_down_sights")
 
 
 func _physics_process(delta):

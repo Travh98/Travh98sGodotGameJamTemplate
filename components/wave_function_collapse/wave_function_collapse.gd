@@ -85,12 +85,12 @@ func collapse_cell(temp_grid: Array[WfcCell]):
 	# Randomly chose one of the cell's tile options
 	var rand_tile_index: int = randi_range(0, cell_to_collapse.tile_options.size() - 1)
 	var selected_tile: PackedScene = cell_to_collapse.tile_options[rand_tile_index]
-	cell_to_collapse.tile_options = [selected_tile]
-	
-	var tile = selected_tile.instantiate()
-	add_child(tile)
-	tile.position = cell_to_collapse.position
-	print("Collapsed cell at: ", tile.position.x, ", ", tile.position.z, " to be: ", selected_tile.resource_path)
+	#cell_to_collapse.tile_options = [selected_tile]
+	#
+	#var tile = selected_tile.instantiate()
+	#add_child(tile)
+	#tile.position = cell_to_collapse.position
+	#print("Collapsed cell at: ", tile.position.x, ", ", tile.position.z, " to be: ", selected_tile.resource_path)
 	
 	update_generation()
 

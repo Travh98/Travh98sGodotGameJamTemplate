@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cheoq2dxkgi7u"]
+[gd_scene load_steps=16 format=3 uid="uid://cheoq2dxkgi7u"]
 
 [ext_resource type="Script" path="res://components/fps_character/fps_character.gd" id="1_1asp3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="1_r0lxu"]
@@ -132,6 +132,60 @@ _data = {
 "landing": SubResource("Animation_l6rgd")
 }
 
+[sub_resource type="Animation" id="Animation_seiyb"]
+resource_name = "aim_down_sights"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DevRifle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.0632654, -0.0143892, -0.0487807), Vector3(3.64929e-05, -0.00134647, -0.0487807)]
+}
+
+[sub_resource type="Animation" id="Animation_mtodd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DevRifle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.0632654, -0.0143892, -0.0487807)]
+}
+
+[sub_resource type="Animation" id="Animation_mdgal"]
+resource_name = "unaim_down_sights"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DevRifle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(3.64929e-05, -0.00134647, -0.0487807), Vector3(0.0632654, -0.0143892, -0.0487807)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_iy8v0"]
+_data = {
+"RESET": SubResource("Animation_mtodd"),
+"aim_down_sights": SubResource("Animation_seiyb"),
+"unaim_down_sights": SubResource("Animation_mdgal")
+}
+
 [node name="FpsCharacter" type="CharacterBody3D"]
 script = ExtResource("1_1asp3")
 
@@ -172,7 +226,12 @@ libraries = {
 }
 
 [node name="DevRifle" parent="Neck/Head/Eyes" instance=ExtResource("3_hv7dg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200213, -0.363085, -0.503023)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0632654, -0.0143892, -0.0487807)
+
+[node name="AdsAnimPlayer" type="AnimationPlayer" parent="Neck/Head/Eyes"]
+libraries = {
+"": SubResource("AnimationLibrary_iy8v0")
+}
 
 [node name="StandingRoomCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 1.8, 0)

@@ -16,6 +16,7 @@ class_name Gun
 @onready var reload_sfx: RandomSfxPlayer = $ReloadSfx
 @onready var rechamber_sfx: AudioStreamPlayer3D = $RechamberSfx
 
+@onready var model_anim_player: AnimationPlayer = $WalnutRifle2/AnimationPlayer
 
 func _ready():
 	shot_cooldown_timer.wait_time = shot_cooldown_time
@@ -48,6 +49,7 @@ func shoot(aim_cast: RayCast3D):
 	shot_cooldown_timer.start()
 	rechamber_timer.start()
 	shoot_sfx.play()
+	model_anim_player.play("shoot")
 
 
 func reload():
@@ -56,6 +58,7 @@ func reload():
 		return
 	reload_timer.start()
 	reload_sfx.play_sound()
+	model_anim_player.play("reload")
 
 
 func on_reload_finished():
@@ -64,3 +67,4 @@ func on_reload_finished():
 
 func on_rechamber():
 	rechamber_sfx.play()
+	model_anim_player.play("rechamber")
