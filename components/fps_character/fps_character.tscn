@@ -1,9 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://cheoq2dxkgi7u"]
+[gd_scene load_steps=15 format=3 uid="uid://cheoq2dxkgi7u"]
 
 [ext_resource type="Script" path="res://components/fps_character/fps_character.gd" id="1_1asp3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="1_r0lxu"]
-[ext_resource type="PackedScene" uid="uid://clcdrmfwr6u7k" path="res://props/dev_rifle.tscn" id="3_hv7dg"]
 [ext_resource type="PackedScene" uid="uid://c0u1u1w315lqq" path="res://ui/fps_char_state_info/fps_character_state_info.tscn" id="3_xcuqc"]
+[ext_resource type="PackedScene" uid="uid://dicawq3hlqp5e" path="res://components/locomotion_driver/locomotion_driver.tscn" id="4_2mgsi"]
+[ext_resource type="PackedScene" uid="uid://dexa6jq6wkuuy" path="res://components/step_checker/step_checker.tscn" id="4_a0504"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="6_4v23e"]
+[ext_resource type="PackedScene" uid="uid://dfc8fb3pj77jl" path="res://components/interactions/interact_controller.tscn" id="7_p1veb"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ftsmo"]
 radius = 0.25
@@ -12,6 +15,61 @@ height = 1.8
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a12wd"]
 radius = 0.25
 height = 1.3
+
+[sub_resource type="Animation" id="Animation_7g0d3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FpsCharPcam:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FpsCharPcam:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_2fcpc"]
+resource_name = "heavy_landing"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FpsCharPcam:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.5, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FpsCharPcam:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_phewf"]
 resource_name = "jump"
@@ -41,33 +99,6 @@ tracks/1/keys = {
 "values": [Vector3(0, 0, 0), Vector3(-0.0523599, 0, 0), Vector3(0, 0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_7g0d3"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FpsCharPcam:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FpsCharPcam:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-
 [sub_resource type="Animation" id="Animation_l6rgd"]
 resource_name = "landing"
 length = 0.3
@@ -82,34 +113,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Vector3(0, 0, 0), Vector3(0, -0.1, 0), Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FpsCharPcam:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_2fcpc"]
-resource_name = "heavy_landing"
-length = 0.3
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FpsCharPcam:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, -0.5, 0), Vector3(0, 0, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -166,13 +169,16 @@ camera_3D_resource = null
 target_position = Vector3(0, 0, -1000)
 debug_shape_custom_color = Color(0, 0.945098, 0, 0.117647)
 
+[node name="InteractRaycast" type="RayCast3D" parent="Neck/Head/Eyes/FpsCharPcam"]
+target_position = Vector3(0, 0, -10)
+collide_with_areas = true
+debug_shape_custom_color = Color(0, 0.729412, 0, 0.117647)
+debug_shape_thickness = 3
+
 [node name="EyesAnimPlayer" type="AnimationPlayer" parent="Neck/Head/Eyes"]
 libraries = {
 "": SubResource("AnimationLibrary_bjicv")
 }
-
-[node name="DevRifle" parent="Neck/Head/Eyes" instance=ExtResource("3_hv7dg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200213, -0.363085, -0.503023)
 
 [node name="StandingRoomCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 1.8, 0)
@@ -181,7 +187,23 @@ target_position = Vector3(0, 1.8, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137367, -0.448626)
 
 [node name="FpsCharacterStateInfo" parent="." instance=ExtResource("3_xcuqc")]
+visible = false
 
 [node name="CoyoteTimer" type="Timer" parent="."]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+[node name="StepChecker" parent="." instance=ExtResource("4_a0504")]
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="LocomotionDriver" parent="." instance=ExtResource("4_2mgsi")]
+ai_controlled = false
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+current = true
+
+[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
+script = ExtResource("6_4v23e")
+
+[node name="InteractController" parent="." node_paths=PackedStringArray("interact_cast") instance=ExtResource("7_p1veb")]
+interact_cast = NodePath("../Neck/Head/Eyes/FpsCharPcam/InteractRaycast")

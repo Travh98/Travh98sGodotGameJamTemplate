@@ -1,4 +1,4 @@
-extends CharacterBody3D
+extends Mob
 class_name FpsCharacter
 
 ## First Person Player Controller
@@ -16,13 +16,8 @@ class_name FpsCharacter
 @onready var continue_slide_cast: RayCast3D = $ContinueSlideCast
 @onready var eyes_anim_player = $Neck/Head/Eyes/EyesAnimPlayer
 @onready var eye_raycast = $Neck/Head/Eyes/FpsCharPcam/EyeRaycast
-
-# Speed variables
-var current_speed: = 5.0
-const WalkingSpeed: float = 5.0
-const SprintingSpeed: float = 8.0
-const CrouchingSpeed: float = 3.0
-const JumpVelocity = 4.5
+#@onready var ads_anim_player = $Neck/Head/Eyes/AdsAnimPlayer
+@onready var locomotion_driver: LocomotionDriver = $LocomotionDriver
 
 # Player Height
 var crouching_depth: float = -0.5
@@ -32,7 +27,7 @@ var head_height: float = 1.7
 const mouse_sens: float = 0.25
 var lerp_speed: float = 10.0
 var air_lerp_speed: float = 3.0
-var direction: Vector3 = Vector3.ZERO
+var player_control_direction: Vector3 = Vector3.ZERO
 
 # Player State
 var is_walking: bool = false
@@ -78,7 +73,7 @@ var last_frame_on_floor: bool = false # Tracks if on the floor last frame
 @onready var coyote_timer = $CoyoteTimer
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * 1.0
+#var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * 1.0
 
 func _ready():
 	# Activate first person camera on startup
@@ -100,15 +95,22 @@ func _input(event):
 			rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
 		head.rotate_x(deg_to_rad(-event.relative.y * mouse_sens))
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+	
+	if Input.is_action_just_pressed("secondary"):
+		#ads_anim_player.play("aim_down_sights")
+		head_pcam.set_camera_fov(30)
+	if Input.is_action_just_released("secondary"):
+		head_pcam.set_camera_fov(75)
+		#ads_anim_player.play("unaim_down_sights")
 
 
 func _physics_process(delta):
 	var input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
-	if Input.is_action_just_pressed("primary"):
-		$Neck/Head/Eyes/DevRifle.shoot(eye_raycast)
-	if Input.is_action_just_pressed("reload"):
-		$Neck/Head/Eyes/DevRifle.reload()
+	#if Input.is_action_just_pressed("primary"):
+		#$Neck/Head/Eyes/DevRifle.shoot(eye_raycast)
+	#if Input.is_action_just_pressed("reload"):
+		#$Neck/Head/Eyes/DevRifle.reload()
 	
 	# Movement
 	if Input.is_action_pressed("crouch") or is_sliding:
@@ -141,7 +143,7 @@ func _physics_process(delta):
 	
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y -= gravity * delta
+		velocity.y -= locomotion_driver.gravity * delta
 	
 	if is_on_floor():
 		is_slide_jumping = false
@@ -159,7 +161,7 @@ func _physics_process(delta):
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and (is_on_floor() or in_coyote_time):
 		var initial_y_velocity: float = velocity.y
-		velocity.y = JumpVelocity
+		velocity.y = locomotion_driver.jump_velocity
 		is_jumping = true
 		# Cancel the slide if jumping
 		if is_sliding:
@@ -168,7 +170,7 @@ func _physics_process(delta):
 				slide_vector = input_dir
 				is_sliding = false
 				# Slide jumping needs more of a height boost to be viable for crossing gaps
-				velocity.y = JumpVelocity * 1.5
+				velocity.y = locomotion_driver.jump_velocity * 1.5
 				slide_jump_cooldown = SlideJumpCooldownMax
 				#print("Slide jumping")
 			else:
@@ -180,38 +182,39 @@ func _physics_process(delta):
 		eyes_anim_player.play("jump")
 	
 	# Allow them to jump if they full stop
-	if velocity.length() <= CrouchingSpeed:
+	if velocity.length() <= locomotion_driver.crouching_speed:
 		slide_jump_cooldown = 0.0
 	
 	# Detect when we land
 	if is_on_floor():
 		is_jumping = false
-		if last_frame_velocity.y < -10.0:
-			eyes_anim_player.play("heavy_landing")
-		elif last_frame_velocity.y < -1.0: 
-			eyes_anim_player.play("landing")
+		if !is_sliding:
+			if last_frame_velocity.y < -10.0:
+				eyes_anim_player.play("heavy_landing")
+			elif last_frame_velocity.y < -5.0: 
+				eyes_anim_player.play("landing")
 	
 	# Acceleration
 	if is_on_floor():
-		direction = lerp(direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerp_speed)
+		player_control_direction = lerp(player_control_direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerp_speed)
 	else:
 		# Air control
 		if input_dir != Vector2.ZERO:
-			direction = lerp(direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * air_lerp_speed)
+			player_control_direction = lerp(player_control_direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * air_lerp_speed)
 	
 	if is_sliding or is_slide_jumping:
-		direction = (transform.basis * Vector3(slide_vector.x, 0, slide_vector.y)).normalized()
+		player_control_direction = (transform.basis * Vector3(slide_vector.x, 0, slide_vector.y)).normalized()
 	if is_sliding:
-		current_speed = (clampf(slide_timer, 0.0, MaxSlideTime) + clampf(slide_time_debt, 0.0, MaxSlideTime) + 0.1) * SlideSpeed
+		locomotion_driver.current_speed = (clampf(slide_timer, 0.0, MaxSlideTime) + clampf(slide_time_debt, 0.0, MaxSlideTime) + 0.1) * SlideSpeed
 	if is_slide_jumping:
-		current_speed = SlideSpeed
+		locomotion_driver.current_speed = SlideSpeed
 	
-	if direction:
-		velocity.x = direction.x * current_speed
-		velocity.z = direction.z * current_speed
+	if player_control_direction:
+		velocity.x = player_control_direction.x * locomotion_driver.current_speed
+		velocity.z = player_control_direction.z * locomotion_driver.current_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, current_speed)
-		velocity.z = move_toward(velocity.z, 0, current_speed)
+		velocity.x = move_toward(velocity.x, 0, locomotion_driver.current_speed)
+		velocity.z = move_toward(velocity.z, 0, locomotion_driver.current_speed)
 	
 	last_frame_velocity = velocity
 	move_and_slide()
@@ -221,10 +224,10 @@ func _physics_process(delta):
 
 func handle_crouch(input_dir: Vector2, delta: float):
 	if is_on_floor():
-		current_speed = lerp(current_speed, CrouchingSpeed, delta * lerp_speed)
+		locomotion_driver.current_speed = lerp(locomotion_driver.current_speed, locomotion_driver.crouching_speed, delta * lerp_speed)
 	else:
 		# Multiply the gravity
-		velocity.y -= gravity * 2 * delta
+		velocity.y -= locomotion_driver.gravity * 2 * delta
 	head.position.y = lerp(head.position.y, crouching_depth, delta * lerp_speed)
 	standing_col.disabled = true
 	crouching_col.disabled = false
@@ -284,7 +287,7 @@ func handle_slide_state(input_dir: Vector2, delta: float):
 			slide_end()
 	
 	# If we are moving slow we have probably hit a wall, cancel the slide
-	if velocity.length() < CrouchingSpeed:
+	if velocity.length() < locomotion_driver.crouching_speed:
 		#print("Not moving fast enough, cancelling slide")
 		slide_end()
 
@@ -306,7 +309,7 @@ func handle_stand_up(delta: float):
 
 
 func handle_sprinting(delta: float):
-	current_speed = lerp(current_speed, SprintingSpeed, delta * lerp_speed)
+	locomotion_driver.current_speed = lerp(locomotion_driver.current_speed, locomotion_driver.sprinting_speed, delta * lerp_speed)
 	
 	is_walking = false
 	is_sprinting = true
@@ -314,7 +317,7 @@ func handle_sprinting(delta: float):
 
 
 func handle_walking(delta: float):
-	current_speed = lerp(current_speed, WalkingSpeed, delta * lerp_speed)
+	locomotion_driver.current_speed = lerp(locomotion_driver.current_speed, locomotion_driver.walking_speed, delta * lerp_speed)
 	is_walking = true
 	is_sprinting = false
 	is_crouching = false

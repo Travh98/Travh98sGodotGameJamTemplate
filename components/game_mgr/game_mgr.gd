@@ -8,7 +8,7 @@ var current_level_parent: Node
 
 # Global boolean for pausing anything important, while allowing animations to play
 var do_process_actions: bool = true : set = set_process_actions
-
+var played_once: bool = false
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS

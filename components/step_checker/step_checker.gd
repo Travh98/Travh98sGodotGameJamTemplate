@@ -9,6 +9,8 @@ extends Node3D
 
 @export var character_height: float = 2.0 
 @export var step_height: float = 0.25
+@export var radius_to_check_step: float = 0.75
+@export var expected_max_speed: float = 8.0 
 
 var parent: Node3D = null
 
@@ -21,19 +23,24 @@ func _ready():
 
 
 # Uses raycasts to see if a valid step is in the direction of desired direction
-# Returns the relative position to step to
-func can_step(desired_dir: Vector3, _delta: float) -> Vector3:
+# Returns the relative position to step to, or Vector3.ZERO if no step
+func can_step(desired_dir: Vector3, current_velocity: Vector3, _delta: float) -> Vector3:
 	# This is a top level object, so move to where it belongs on the character
 	# We are top level to avoid inheriting rotations
 	global_position = parent.global_position + Vector3(0, character_height / 2 + step_height, 0)
 	
-	# Move raycasts in the direction of input direction
+	# Wall Check points from the Mob's center towards the direction of movement
 	wall_check.position = Vector3.ZERO
-	wall_check.target_position = desired_dir
+	wall_check.target_position = Vector3(desired_dir.normalized().x, 0, desired_dir.normalized().z) * \
+		radius_to_check_step * clamp(current_velocity.length() / expected_max_speed, 1.0, 2.0)
+	
+	# Floor Check points from then end of the Wall Check to the ground
 	floor_check.position = wall_check.position + wall_check.target_position
-	floor_check.target_position = -Vector3.UP * character_height
+	floor_check.target_position = -Vector3.UP * character_height * 2
+	
+	# Ceiling Check points from the end of the Wall Check to the ceiling
 	ceiling_check.position = wall_check.position + wall_check.target_position
-	ceiling_check.target_position = Vector3.UP * character_height
+	ceiling_check.target_position = Vector3.UP * character_height * 2
 	
 	var floor_pos: Vector3 = Vector3.ZERO
 	if is_wall_detected():
