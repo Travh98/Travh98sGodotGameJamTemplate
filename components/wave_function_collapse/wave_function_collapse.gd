@@ -24,9 +24,10 @@ func scan_for_tiles():
 			if !dir.current_is_dir():
 				# This is a file
 				var file_path: String = dir.get_current_dir() + "/" + file_name
-				print("Found tile: ", file_path)
+				print("Found Wave Function Collapse tile: ", file_path)
 				tile_objects.append(load(file_path))
 			file_name = dir.get_next()
+	print("Loaded ", tile_objects.size(), " tile objects")
 
 
 func initialize_grid():
@@ -79,18 +80,20 @@ func collapse_cell(temp_grid: Array[WfcCell]):
 	# Put the tile into this cell's position
 	var rand_index: int = randi_range(0, temp_grid.size())
 	
-	var cell_to_collapse = temp_grid[rand_index]
+	var cell_to_collapse: WfcCell = temp_grid[rand_index]
 	cell_to_collapse.is_collapsed = true
 	
 	# Randomly chose one of the cell's tile options
 	var rand_tile_index: int = randi_range(0, cell_to_collapse.tile_options.size() - 1)
-	var selected_tile: PackedScene = cell_to_collapse.tile_options[rand_tile_index]
-	#cell_to_collapse.tile_options = [selected_tile]
-	#
-	#var tile = selected_tile.instantiate()
-	#add_child(tile)
-	#tile.position = cell_to_collapse.position
-	#print("Collapsed cell at: ", tile.position.x, ", ", tile.position.z, " to be: ", selected_tile.resource_path)
+	var selected_tile: WfcTile = cell_to_collapse.tile_options[rand_tile_index]
+	print("Choosing tile ", rand_tile_index, " out of ", cell_to_collapse.tile_options.size() - 1)
+	selected_tile.print_info()
+	cell_to_collapse.tile_options.append(selected_tile)
+	
+	var tile = selected_tile.model.instantiate()
+	add_child(tile)
+	tile.position = cell_to_collapse.position
+	print("Collapsed cell at: ", tile.position.x, ", ", tile.position.z, " to be: ", selected_tile.resource_path)
 	
 	update_generation()
 

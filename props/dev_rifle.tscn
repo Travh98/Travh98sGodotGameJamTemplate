@@ -23,9 +23,6 @@ mesh = SubResource("BoxMesh_b6mw5")
 [node name="WalnutRifle2" parent="." instance=ExtResource("3_tl1pk")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 
-[node name="RifleBolt" parent="WalnutRifle2/WalnutRifle" index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0125058, 0.0169072)
-
 [node name="ShotCooldownTimer" type="Timer" parent="."]
 one_shot = true
 

@@ -2,34 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://df0mv67v1u34" path="res://assets/weapons/WalnutRifle.glb" id="1_ubaiv"]
 
-[sub_resource type="Animation" id="Animation_1yctr"]
-resource_name = "reload"
-length = 2.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("WalnutRifle/RifleBolt:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.3, 1.7, 2),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0, -0.0125058, 0.0169072), Vector3(0, -0.0125058, -0.0294185), Vector3(0, -0.0125058, -0.0294185), Vector3(0, -0.0125058, 0.0169072)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("WalnutRifle/RifleBolt:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.1, 1.8, 2),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, -1.14708), Vector3(0, 0, -1.14708), Vector3(0, 0, 0)]
-}
-
 [sub_resource type="Animation" id="Animation_tccoc"]
 length = 0.001
 tracks/0/type = "value"
@@ -103,6 +75,34 @@ tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.2, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, -1.14708), Vector3(0, 0, -1.14708), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_1yctr"]
+resource_name = "reload"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WalnutRifle/RifleBolt:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 1.7, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, -0.0125058, 0.0169072), Vector3(0, -0.0125058, -0.0294185), Vector3(0, -0.0125058, -0.0294185), Vector3(0, -0.0125058, 0.0169072)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WalnutRifle/RifleBolt:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 1.8, 2),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
 "values": [Vector3(0, 0, 0), Vector3(0, 0, -1.14708), Vector3(0, 0, -1.14708), Vector3(0, 0, 0)]

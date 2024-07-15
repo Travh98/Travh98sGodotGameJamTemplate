@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://b3pu1tvl7wlnn"]
+[gd_scene load_steps=29 format=3 uid="uid://b3pu1tvl7wlnn"]
 
 [ext_resource type="MeshLibrary" uid="uid://dfj7cvhte3dsn" path="res://assets/gridmap/dev_meshlib.meshlib" id="1_3j1fv"]
 [ext_resource type="Texture2D" uid="uid://cvi4bsih01rwp" path="res://assets/sky/kloofendal_48d_partly_cloudy_puresky_1k.exr" id="1_8elnh"]
@@ -18,12 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://dfl2xtfkbwnyf" path="res://components/anim_assistant/anim_assistant.tscn" id="12_hs5xs"]
 [ext_resource type="PackedScene" uid="uid://cheoq2dxkgi7u" path="res://components/fps_character/fps_character.tscn" id="14_4xf7e"]
 [ext_resource type="PackedScene" uid="uid://cbf86ogudnhaq" path="res://components/location_indicator/location_indicator.tscn" id="18_rt2b4"]
-[ext_resource type="PackedScene" uid="uid://bdnqo5qsha0ms" path="res://components/wave_function_collapse/wfc_cell.tscn" id="19_bqnql"]
-[ext_resource type="PackedScene" uid="uid://bscrhv22ji7c4" path="res://components/wave_function_collapse/wave_function_generator.tscn" id="20_plipr"]
-[ext_resource type="PackedScene" uid="uid://vb8h14q8curb" path="res://assets/wave_function_collapse_test/pr_wfc_building.tscn" id="21_hs2wl"]
-[ext_resource type="PackedScene" uid="uid://b4m2ie88syali" path="res://assets/wave_function_collapse_test/pr_wfc_curved_road.tscn" id="22_6t6cn"]
-[ext_resource type="PackedScene" uid="uid://briv6vetbyr1d" path="res://assets/wave_function_collapse_test/pr_wfc_straight_road.tscn" id="23_tq1kq"]
-[ext_resource type="PackedScene" uid="uid://culmlask2gbv6" path="res://assets/wave_function_collapse_test/pr_wfc_tall_building.tscn" id="24_3g6bw"]
+[ext_resource type="MeshLibrary" uid="uid://cntanbop8vn7p" path="res://assets/gridmap/wfc_meshlib.tres" id="20_8833j"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_7rnda"]
 panorama = ExtResource("1_8elnh")
@@ -234,6 +229,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -12)
 [node name="RespawnPos" parent="." instance=ExtResource("18_rt2b4")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 15.0652, 18.9596, -40.6423)
 
-[node name="WaveFunctionGenerator" parent="." instance=ExtResource("20_plipr")]
-tile_objects = Array[PackedScene]([ExtResource("21_hs2wl"), ExtResource("22_6t6cn"), ExtResource("23_tq1kq"), ExtResource("24_3g6bw")])
-CellScene = ExtResource("19_bqnql")
+[node name="SampleGridmap" type="GridMap" parent="."]
+mesh_library = ExtResource("20_8833j")
+cell_size = Vector3(4, 4, 4)
+data = {
+"cells": PackedInt32Array(0, 9, 2, 0, 7, 2, 0, 11, 655360, 0, 5, 0, 65534, 11, 1441794, 2, 5, 1441794, 65534, 9, 1441795, 65534, 7, 1441795, 0, 13, 1441795, 0, 15, 1441793, 65532, 7, 1441793)
+}
+
+[node name="TargetGridmap" type="GridMap" parent="."]
+mesh_library = ExtResource("20_8833j")
+cell_size = Vector3(4, 4, 4)
+data = {
+"cells": PackedInt32Array(0, 7, 2, 65534, 11, 1441794, 0, 13, 1441795, 65532, 7, 1441793)
+}
